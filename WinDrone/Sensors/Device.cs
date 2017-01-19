@@ -23,17 +23,30 @@ namespace WinDrone.Sensors
             return data;
         }
 
-        protected byte ReadByte(byte register) => 
-            ReadBytes(register, 1)[0];
+        protected byte ReadByte(byte register)
+        {
+            return ReadBytes(register, 1)[0];
+        }
 
-        protected void WriteByte(byte register, byte data) =>
+        protected void WriteByte(byte register, byte data)
+        {
             I2c.Write(new byte[] { register, data });
+        }
 
-        protected short ToShort(byte[] data, int offset = 0) => 
-            (short)((data[0 + offset] << 8) | data[1 + offset]);
+        protected short ReadShort(byte register)
+        {
+            return BitConverter.ToInt16(ReadBytes(register, 2), 0);
+        }
 
-        protected ushort ToUShort(byte[] data) =>
-            (ushort)((data[0] << 8) | data[1]);
+        protected ushort ReadUShort(byte register)
+        {
+            return BitConverter.ToUInt16(ReadBytes(register, 2), 0);
+        }
+
+        protected short ToShort(byte[] data, int offset = 0)
+        {
+            return (short)((data[0 + offset] << 8) | data[1 + offset]);
+        }
 
         public abstract bool Begin();
     }

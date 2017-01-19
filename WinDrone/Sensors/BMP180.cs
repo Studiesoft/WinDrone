@@ -33,17 +33,17 @@ namespace WinDrone.Sensors
                 // Read calibration data
                 Calibration = new CalibrationData()
                 {
-                    AC1 = ToShort(ReadBytes((byte)Register.AC1, 2)),
-                    AC2 = ToShort(ReadBytes((byte)Register.AC2, 2)),
-                    AC3 = ToShort(ReadBytes((byte)Register.AC3, 2)),
-                    AC4 = ToUShort(ReadBytes((byte)Register.AC4, 2)),
-                    AC5 = ToUShort(ReadBytes((byte)Register.AC5, 2)),
-                    AC6 = ToUShort(ReadBytes((byte)Register.AC6, 2)),
-                    B1 = ToShort(ReadBytes((byte)Register.B1, 2)),
-                    B2 = ToShort(ReadBytes((byte)Register.B2, 2)),
-                    MB = ToShort(ReadBytes((byte)Register.MB, 2)),
-                    MC = ToShort(ReadBytes((byte)Register.MC, 2)),
-                    MD = ToShort(ReadBytes((byte)Register.MD, 2)),
+                    AC1 = ReadShort((byte)Register.AC1),
+                    AC2 = ReadShort((byte)Register.AC2),
+                    AC3 = ReadShort((byte)Register.AC3),
+                    AC4 = ReadUShort((byte)Register.AC4),
+                    AC5 = ReadUShort((byte)Register.AC5),
+                    AC6 = ReadUShort((byte)Register.AC6),
+                    B1 = ReadShort((byte)Register.B1),
+                    B2 = ReadShort((byte)Register.B2),
+                    MB = ReadShort((byte)Register.MB),
+                    MC = ReadShort((byte)Register.MC),
+                    MD = ReadShort((byte)Register.MD),
                 };
             }
             catch
