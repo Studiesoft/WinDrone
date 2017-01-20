@@ -27,20 +27,6 @@ namespace WinDrone
         public MainPage()
         {
             this.InitializeComponent();
-            //InitCamera();
-        }
-
-        private async void InitCamera()
-        {
-            var capture = new MediaCapture();
-            var settings = new MediaCaptureInitializationSettings()
-            {
-                StreamingCaptureMode = StreamingCaptureMode.Video
-            };
-            var devices = (await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture)).ToArray();
-            await capture.InitializeAsync(settings);
-            CameraElement.Source = capture;
-            await capture.StartPreviewAsync();
         }
     }
 }

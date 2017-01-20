@@ -26,6 +26,7 @@ namespace WinDrone
         private static LSM303DLHC.Accelerometer Accel { get; set; }
         private static LSM303DLHC.Magnetometer Magnet { get; set; }
         private static Dictionary<int, GPIO> Pins { get; } = new Dictionary<int, GPIO>();
+        private static Dictionary<int, PwmPin> ThrottlePins { get; } = new Dictionary<int, PwmPin>();
         private static Queue<LSM303DLHC.Data> AccelBuffer { get; } = new Queue<LSM303DLHC.Data>();
 
         private const int AccelBufferLength = 5;
@@ -37,7 +38,7 @@ namespace WinDrone
                 LowLevelDevicesController.DefaultProvider = LightningProvider.GetAggregateProvider();
 
             InitPwm();
-            /*InitPins();
+            InitPins();
             InitAccel();
 
             var timer = new DispatcherTimer();
@@ -54,7 +55,7 @@ namespace WinDrone
                 CheckLevel();
             };
             timer.Interval = TimeSpan.FromMilliseconds(100);
-            timer.Start();*/
+            timer.Start();
         }
 
         private static bool CheckLevel()
@@ -126,39 +127,38 @@ namespace WinDrone
             var controllers = await PwmController.GetControllersAsync(LightningPwmProvider.GetPwmProvider());
             PwmController controller = controllers[1];
             controller.SetDesiredFrequency(50);
-
-            // trigger at .061
-            var pin = controller.OpenPin(4);
-            pin.SetActiveDutyCyclePercentage(.05);
+            
+            PwmPin pin = controller.OpenPin((int)GPIO.Numbers.GPIO4);
+            ThrottlePins.Add(1, pin);
+            Throttle(1, 0);
             pin.Start();
+       
+        }
 
-            while (true)
+        /// <summary>
+        /// Sets the throttle of an engine
+        /// </summary>
+        public static void Throttle(int engineId, int amount)
+        {
+            const double min = 0.061; // 1.2ms and a bit
+            const double max = 0.070; // 1.4ms
+            const double off = 0.050; // 1ms
+            const double gap = max - min;
+
+            if (!ThrottlePins.ContainsKey(engineId))
+                return;
+            PwmPin pin = ThrottlePins[engineId];
+
+            if (amount <= 0 || amount > 100)
             {
-                pin.SetActiveDutyCyclePercentage(.061);
-                await Task.Delay(500);
-                pin.SetActiveDutyCyclePercentage(.05);
+                pin.SetActiveDutyCyclePercentage(off);
+                return;
             }
 
-            //while (true)
-            //{
-            //    pin.SetActiveDutyCyclePercentage(.05);
-            //    for (var i = .061; i <= .07; i += .0005)
-            //    {
-            //        pin.SetActiveDutyCyclePercentage(i);
-            //        await Task.Delay(200);
-            //    }
-            //    for (var i = .07; i > .061; i -= .0005)
-            //    {
-            //        pin.SetActiveDutyCyclePercentage(i);
-            //        await Task.Delay(200);
-            //    }
-            //}
+            double throttle = gap * (amount / 100) + min;
+            if (throttle > max)
+                throttle = max;
 
-            //while (true)
-            //{
-            //    pin.SetActiveDutyCyclePercentage(.07);
-            //    pin.SetActiveDutyCyclePercentage(.05);
-            //}
         }
 
         private static async Task<I2cDevice> GetDevice(int address)
