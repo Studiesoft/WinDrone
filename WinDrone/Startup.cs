@@ -158,7 +158,7 @@ namespace WinDrone
             double throttle = gap * (amount / 100) + min;
             if (throttle > max)
                 throttle = max;
-
+            pin.SetActiveDutyCyclePercentage(throttle);
         }
 
         private static async Task<I2cDevice> GetDevice(int address)
